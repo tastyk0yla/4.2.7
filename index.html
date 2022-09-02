@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./styles.css" />
+    <title>Document</title>
+  </head>
+  <body>
+    <main class="main">
+      <div class="search">
+        <label for="search" class="search--label">
+          <input
+            type="search"
+            name="search"
+            id="search"
+            class="search--input"
+            placeholder="Search"
+          />
+        </label>
+        <ul class="autocomplete--container"></ul>
+        <ul class="added-repos--container">
+          <template id="repos-item">
+            <li class="added-repos--item">
+              <div class="added-repos--text">
+                <div class="name">
+                  <span class="name-name">Name:</span>
+                  <span class="name-value">react</span>
+                </div>
+                <div class="owner">
+                  <span class="owner-name">Owner:</span>
+                  <span class="owner-value">facebook</span>
+                </div>
+                <div class="stars">
+                  <span class="stars-name">Stars:</span>
+                  <span class="stars-value">1452310</span>
+                </div>
+              </div>
+              <button type="button" class="btn--close">
+                <img src="./img/close.svg" alt="Close" />
+              </button>
+            </li>
+          </template>
+        </ul>
+      </div>
+    </main>
+    <script src="./script.js"></script>
+  </body>
+</html>
