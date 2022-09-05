@@ -1,10 +1,5 @@
-// async function tester(){
-//     let arr = await getRepos();
-//     arr.forEach( item => renderElement('autocomplete--container', item));
-//     renderElement('added-repos--container', arr[0])
-// }
-
 localStorage.clear()
+
 async function getRepos(requestText){
     try {
         let response = await fetch(`https://api.github.com/search/repositories?q=${requestText}`);
@@ -23,6 +18,25 @@ async function getRepos(requestText){
         console.log(error);
     }
 }
+
+function renderAutocomplete(elements){
+    let parent = document.querySelector(`.autocomplete--container`);
+    clearOldRepos();
+    if (searchInput.value){
+        elements.forEach((element, index) => {
+            let li = document.createElement('li');
+            li.classList.add('autocomplete--item');
+            li.textContent = element['name'];
+            li.setAttribute('repoId', index);
+            parent.appendChild(li);
+            li.addEventListener('click', ()=> {
+                renderSavedRepo(elements[index]);
+                clearOldRepos();
+            });
+        });
+    };
+};
+
 function renderSavedRepo(element){
     let parent = document.querySelector(`.added-repos--container`);
     let template = document.getElementById('repos-item');
@@ -33,23 +47,6 @@ function renderSavedRepo(element){
     parent.appendChild(li);
     searchInput.value = '';
 };
-
-
-function renderAutocomplete(elements){
-    let parent = document.querySelector(`.autocomplete--container`);
-    clearOldRepos();
-    elements.forEach((element, index) => {
-        let li = document.createElement('li');
-        li.classList.add('autocomplete--item');
-        li.textContent = element['name'];
-        li.setAttribute('repoId', index);
-        parent.appendChild(li);
-        li.addEventListener('click', ()=> {
-            renderSavedRepo(elements[index]);
-        });
-    });
-};
-
 
 function debounce(fn, debounceTime) {
     let timeout; 
@@ -69,43 +66,37 @@ function clearOldRepos(){
     }
 }
 
+const search =  (value) => {
+    getRepos(value)
+    .then(() => {   
+        const curRepos = localStorage.getItem('currentRepos');
+        renderAutocomplete(JSON.parse(curRepos));
+     });
+}
+const searchDebounced = debounce(search, 600);
 
-// const getReposDebounced = debounce(getRepos, 1000)
-// let inputHandler = () => {
-//     getReposDebounced(searchInput.value)
-//     let curRepos = localStorage.getItem('currentRepos');
-//     if (curRepos) renderElement('autocomplete--container', JSON.parse(curRepos));
-
-// };
-
-const inputHandler = (event) => {
+const searcInputHandler = (event) => {
     const value = event.target.value;
     if (value.length > 0){
-            getRepos(value)
-            .then(() => {   
-                const curRepos = localStorage.getItem('currentRepos');
-                renderAutocomplete(JSON.parse(curRepos));
-             });
+        searchDebounced(value);
     } else {
         clearOldRepos();
-        setTimeout(clearOldRepos, 800)
-    }
-    
-}
+    };
+};
 
 const searchInput = document.getElementById('search');
 const addedReposContainer = document.querySelector('.added-repos--container');
 
   
-searchInput.addEventListener('input', inputHandler);
+searchInput.addEventListener('input', searcInputHandler);
 
 addedReposContainer.addEventListener('click', event => {
     let target = event.target;
     if (target.tagName == 'BUTTON' || target.tagName == 'IMG'){
         const li = target.closest('li');
         li.remove()
-    }
-})  
+    };
+}) ; 
 
 
 
